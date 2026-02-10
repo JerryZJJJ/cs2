@@ -214,7 +214,7 @@
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            font-size: 12px;
+            font-size: 11px;
             color: #fff; /* 文字颜色，通常配合 text-shadow */
             text-shadow: 0 1px 2px rgba(0,0,0,1);
             cursor: grab;
@@ -398,7 +398,7 @@
         function updatePlayerName(index, newName) {
             players[index].name = newName;
             document.querySelectorAll(`.token-id-${index}`).forEach(token => {
-                token.innerText = newName.substring(0, 2).toUpperCase();
+                token.innerText = newName.toUpperCase();
             });
         }
 
@@ -411,7 +411,7 @@
 
         function updateTokenVisuals(element, playerData) {
             element.style.backgroundColor = playerData.color;
-            element.innerText = playerData.name.substring(0, 2).toUpperCase();
+            element.innerText = playerData.name.toUpperCase();
         }
 
         // 核心拖拽逻辑
