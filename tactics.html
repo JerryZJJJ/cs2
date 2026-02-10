@@ -395,10 +395,22 @@
         }
 
         // 更新逻辑
+        function applyTokenLabel(token, name) {
+            const text = (name || '').toUpperCase();
+            let fontSize = 11;
+            if (text.length >= 4) {
+                fontSize = 9;
+            } else if (text.length === 3) {
+                fontSize = 10;
+            }
+            token.innerText = text;
+            token.style.fontSize = `${fontSize}px`;
+        }
+
         function updatePlayerName(index, newName) {
             players[index].name = newName;
             document.querySelectorAll(`.token-id-${index}`).forEach(token => {
-                token.innerText = newName.toUpperCase();
+                applyTokenLabel(token, newName);
             });
         }
 
@@ -411,7 +423,7 @@
 
         function updateTokenVisuals(element, playerData) {
             element.style.backgroundColor = playerData.color;
-            element.innerText = playerData.name.toUpperCase();
+            applyTokenLabel(element, playerData.name);
         }
 
         // 核心拖拽逻辑
