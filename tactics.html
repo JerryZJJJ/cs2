@@ -172,6 +172,12 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
+        .map-content {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+        }
+
         .map-header {
             position: absolute;
             top: 15px;
@@ -187,10 +193,61 @@
 
         .map-wrapper {
             position: relative;
-            width: 100%;
+            flex: 1;
+            min-width: 360px;
             /* 保持宽高比 */
             aspect-ratio: 1024 / 1024;
             background: #000;
+        }
+
+        .notes-panel {
+            width: 260px;
+            background: #1a1a1a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .notes-title {
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+
+        .notes-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .notes-textarea {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: white;
+            padding: 6px;
+            border-radius: 4px;
+            width: 100%;
+            font-size: 0.85rem;
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .notes-textarea:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
+        @media (max-width: 900px) {
+            .map-content {
+                flex-direction: column;
+            }
+
+            .notes-panel {
+                width: 100%;
+            }
         }
 
         .game-map {
@@ -282,18 +339,62 @@
             <!-- 地图 1：初始站位 -->
             <div class="map-section">
                 <div class="map-header">Phase 1: 初始站位 / Freeze Time</div>
-                <div class="map-wrapper" id="map-phase-1">
-                    <img src="" class="game-map map-image" alt="Map Radar">
-                    <!-- Tokens will be injected here -->
+                <div class="map-content">
+                    <div class="map-wrapper" id="map-phase-1">
+                        <img src="" class="game-map map-image" alt="Map Radar">
+                        <!-- Tokens will be injected here -->
+                    </div>
+                    <div class="notes-panel">
+                        <div class="notes-title">备注</div>
+                        <label class="notes-label" for="notes-phase-1-summary">简介</label>
+                        <textarea id="notes-phase-1-summary" class="notes-textarea" rows="3" placeholder="开局总体思路..."></textarea>
+
+                        <label class="notes-label" for="notes-phase-1-awp">AWP 要求</label>
+                        <input id="notes-phase-1-awp" type="text" class="input-field" placeholder="AWP职责:">
+
+                        <label class="notes-label" for="notes-phase-1-b">主B 要求</label>
+                        <input id="notes-phase-1-b" type="text" class="input-field" placeholder="主B职责:">
+
+                        <label class="notes-label" for="notes-phase-1-s1">支持1 要求</label>
+                        <input id="notes-phase-1-s1" type="text" class="input-field" placeholder="支持1职责:">
+
+                        <label class="notes-label" for="notes-phase-1-a">主A 要求</label>
+                        <input id="notes-phase-1-a" type="text" class="input-field" placeholder="主A职责:">
+
+                        <label class="notes-label" for="notes-phase-1-s2">支持2 要求</label>
+                        <input id="notes-phase-1-s2" type="text" class="input-field" placeholder="支持2职责:">
+                    </div>
                 </div>
             </div>
 
             <!-- 地图 2：中期/残局 -->
             <div class="map-section">
                 <div class="map-header">Phase 2: 中期博弈 / Execution</div>
-                <div class="map-wrapper" id="map-phase-2">
-                    <img src="" class="game-map map-image" alt="Map Radar">
-                    <!-- Tokens will be injected here -->
+                <div class="map-content">
+                    <div class="map-wrapper" id="map-phase-2">
+                        <img src="" class="game-map map-image" alt="Map Radar">
+                        <!-- Tokens will be injected here -->
+                    </div>
+                    <div class="notes-panel">
+                        <div class="notes-title">备注</div>
+                        <label class="notes-label" for="notes-phase-2-summary">简介</label>
+                        <textarea id="notes-phase-2-summary" class="notes-textarea" rows="3" placeholder="中期总体思路..."></textarea>
+
+                        <label class="notes-label" for="notes-phase-2-awp">AWP 要求</label>
+                        <input id="notes-phase-2-awp" type="text" class="input-field" placeholder="AWP职责:">
+
+                        <label class="notes-label" for="notes-phase-2-b">主B 要求</label>
+                        <input id="notes-phase-2-b" type="text" class="input-field" placeholder="主B职责:">
+
+                        <label class="notes-label" for="notes-phase-2-s1">支持1 要求</label>
+                        <input id="notes-phase-2-s1" type="text" class="input-field" placeholder="支持1职责:">
+
+                        <label class="notes-label" for="notes-phase-2-a">主A 要求</label>
+                        <input id="notes-phase-2-a" type="text" class="input-field" placeholder="主A职责:">
+
+                        <label class="notes-label" for="notes-phase-2-s2">支持2 要求</label>
+                        <input id="notes-phase-2-s2" type="text" class="input-field" placeholder="支持2职责:"> 
+                    </div>
                 </div>
             </div>
 
