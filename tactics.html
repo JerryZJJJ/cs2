@@ -313,6 +313,8 @@
                 <div style="margin-top:5px; font-size: 0.75rem; color: #666;">
                     * 如果图片加载失败，可以尝试粘贴其他图片网址。
                 </div>
+                <div style="font-size: 0.8rem; color: #aaa; margin: 12px 0 5px;">阶段数量:</div>
+                <input type="number" id="phase-count-input" class="input-field" min="1" value="2">
             </div>
 
             <div class="section-group">
@@ -334,71 +336,7 @@
         </aside>
 
         <!-- 地图区域 -->
-        <main class="maps-container">
-            
-            <!-- 地图 1：初始站位 -->
-            <div class="map-section">
-                <div class="map-header">Phase 1: 初始站位 / Freeze Time</div>
-                <div class="map-content">
-                    <div class="map-wrapper" id="map-phase-1">
-                        <img src="" class="game-map map-image" alt="Map Radar">
-                        <!-- Tokens will be injected here -->
-                    </div>
-                    <div class="notes-panel">
-                        <div class="notes-title">备注</div>
-                        <label class="notes-label" for="notes-phase-1-summary">简介</label>
-                        <textarea id="notes-phase-1-summary" class="notes-textarea" rows="3" placeholder="开局总体思路..."></textarea>
-
-                        <label class="notes-label" for="notes-phase-1-awp">AWP 要求</label>
-                        <input id="notes-phase-1-awp" type="text" class="input-field" placeholder="AWP职责:">
-
-                        <label class="notes-label" for="notes-phase-1-b">主B 要求</label>
-                        <input id="notes-phase-1-b" type="text" class="input-field" placeholder="主B职责:">
-
-                        <label class="notes-label" for="notes-phase-1-s1">支持1 要求</label>
-                        <input id="notes-phase-1-s1" type="text" class="input-field" placeholder="支持1职责:">
-
-                        <label class="notes-label" for="notes-phase-1-a">主A 要求</label>
-                        <input id="notes-phase-1-a" type="text" class="input-field" placeholder="主A职责:">
-
-                        <label class="notes-label" for="notes-phase-1-s2">支持2 要求</label>
-                        <input id="notes-phase-1-s2" type="text" class="input-field" placeholder="支持2职责:">
-                    </div>
-                </div>
-            </div>
-
-            <!-- 地图 2：中期/残局 -->
-            <div class="map-section">
-                <div class="map-header">Phase 2: 中期博弈 / Execution</div>
-                <div class="map-content">
-                    <div class="map-wrapper" id="map-phase-2">
-                        <img src="" class="game-map map-image" alt="Map Radar">
-                        <!-- Tokens will be injected here -->
-                    </div>
-                    <div class="notes-panel">
-                        <div class="notes-title">备注</div>
-                        <label class="notes-label" for="notes-phase-2-summary">简介</label>
-                        <textarea id="notes-phase-2-summary" class="notes-textarea" rows="3" placeholder="中期总体思路..."></textarea>
-
-                        <label class="notes-label" for="notes-phase-2-awp">AWP 要求</label>
-                        <input id="notes-phase-2-awp" type="text" class="input-field" placeholder="AWP职责:">
-
-                        <label class="notes-label" for="notes-phase-2-b">主B 要求</label>
-                        <input id="notes-phase-2-b" type="text" class="input-field" placeholder="主B职责:">
-
-                        <label class="notes-label" for="notes-phase-2-s1">支持1 要求</label>
-                        <input id="notes-phase-2-s1" type="text" class="input-field" placeholder="支持1职责:">
-
-                        <label class="notes-label" for="notes-phase-2-a">主A 要求</label>
-                        <input id="notes-phase-2-a" type="text" class="input-field" placeholder="主A职责:">
-
-                        <label class="notes-label" for="notes-phase-2-s2">支持2 要求</label>
-                        <input id="notes-phase-2-s2" type="text" class="input-field" placeholder="支持2职责:"> 
-                    </div>
-                </div>
-            </div>
-
-        </main>
+        <main class="maps-container" id="maps-container"></main>
     </div>
 
     <script>
@@ -413,16 +351,14 @@
 
         // 状态
         let players = JSON.parse(JSON.stringify(initialPlayers));
+        let phaseCount = 2;
 
         // 初始化
         function init() {
             renderControls();
             setupMapUrlListener();
-            renderTokens('map-phase-1');
-            renderTokens('map-phase-2');
-            
-            // 触发一次地图加载
-            updateMapImages(document.getElementById('map-url-input').value);
+            setupPhaseCountListener();
+            renderMaps(phaseCount);
         }
 
         // 监听地图URL变化
@@ -431,6 +367,66 @@
             input.addEventListener('input', (e) => {
                 updateMapImages(e.target.value);
             });
+        }
+
+        function setupPhaseCountListener() {
+            const input = document.getElementById('phase-count-input');
+            input.value = phaseCount;
+            input.addEventListener('input', (e) => {
+                const nextCount = Math.max(1, parseInt(e.target.value, 10) || 1);
+                if (nextCount === phaseCount) return;
+                phaseCount = nextCount;
+                renderMaps(phaseCount);
+            });
+        }
+
+        function getPhaseTitle(index) {
+            if (index === 1) return 'Phase 1: 初始站位 / Freeze Time';
+            if (index === 2) return 'Phase 2: 中期博弈 / Execution';
+            return `Phase ${index}: 阶段 ${index}`;
+        }
+
+        function renderMaps(count) {
+            const container = document.getElementById('maps-container');
+            container.innerHTML = '';
+
+            for (let i = 1; i <= count; i++) {
+                const section = document.createElement('div');
+                section.className = 'map-section';
+                section.innerHTML = `
+                    <div class="map-header">${getPhaseTitle(i)}</div>
+                    <div class="map-content">
+                        <div class="map-wrapper" id="map-phase-${i}">
+                            <img src="" class="game-map map-image" alt="Map Radar">
+                            <!-- Tokens will be injected here -->
+                        </div>
+                        <div class="notes-panel">
+                            <div class="notes-title">备注</div>
+                            <label class="notes-label" for="notes-phase-${i}-summary">简介</label>
+                            <textarea id="notes-phase-${i}-summary" class="notes-textarea" rows="3" placeholder="这一阶段的总体思路..."></textarea>
+
+                            <label class="notes-label" for="notes-phase-${i}-awp">AWP 要求</label>
+                            <input id="notes-phase-${i}-awp" type="text" class="input-field" placeholder="AWP职责:">
+
+                            <label class="notes-label" for="notes-phase-${i}-b">主B 要求</label>
+                            <input id="notes-phase-${i}-b" type="text" class="input-field" placeholder="主B职责:">
+
+                            <label class="notes-label" for="notes-phase-${i}-s1">支持1 要求</label>
+                            <input id="notes-phase-${i}-s1" type="text" class="input-field" placeholder="支持1职责:">
+
+                            <label class="notes-label" for="notes-phase-${i}-a">主A 要求</label>
+                            <input id="notes-phase-${i}-a" type="text" class="input-field" placeholder="主A职责:">
+
+                            <label class="notes-label" for="notes-phase-${i}-s2">支持2 要求</label>
+                            <input id="notes-phase-${i}-s2" type="text" class="input-field" placeholder="支持2职责:">
+                        </div>
+                    </div>
+                `;
+                container.appendChild(section);
+                renderTokens(`map-phase-${i}`);
+            }
+
+            updateMapImages(document.getElementById('map-url-input').value);
         }
 
         function updateMapImages(url) {
