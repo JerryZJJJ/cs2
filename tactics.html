@@ -12,11 +12,13 @@
             --text-muted: #a0a0a0;
             --accent: #d39c31; /* CS2 Gold */
             --border: #404040;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --info: #3498db;
         }
 
         * {
             box-sizing: border-box;
-            /* user-select: none;  Removed global restriction to allow text selection in inputs */
         }
 
         body {
@@ -30,72 +32,6 @@
             flex-direction: column;
             overflow: hidden; 
         }
-
-        /* --- 打印专用样式 (核心修改) --- */
-        @media print {
-            @page {
-                size: landscape; /* 建议横向打印，效果更好 */
-                margin: 10mm;
-            }
-
-            body {
-                height: auto;
-                overflow: visible;
-                background-color: #1b1b1b !important; /* 强制深色背景，需在打印设置开启'背景图形' */
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-
-            .main-content {
-                display: block !important;
-                overflow: visible !important;
-            }
-
-            /* 隐藏左侧栏和多余元素 */
-            .sidebar, .btn-save-pdf, .hidden-setting {
-                display: none !important;
-            }
-
-            /* 优化标题显示 */
-            header {
-                border: none;
-                padding: 10px;
-                background: none;
-            }
-            
-            .tactic-input {
-                border: none !important;
-                font-size: 24pt !important;
-                color: #000; /* PDF标题用深色或根据背景调整 */
-                text-align: center;
-                width: 100%;
-            }
-
-            /* 优化地图容器 */
-            .maps-container {
-                padding: 0 !important;
-                overflow: visible !important;
-                background: none !important;
-                display: block !important;
-                gap: 20px;
-            }
-
-            .map-section {
-                border: 1px solid #ccc !important;
-                box-shadow: none !important;
-                margin-bottom: 20px;
-                break-inside: avoid; /* 防止分页截断 */
-                page-break-inside: avoid;
-                background-color: #222 !important;
-            }
-
-            /* 强制文字颜色，防止打印机自动变黑白 */
-            .token {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-        }
-        /* --- 打印样式结束 --- */
 
         /* 顶部标题栏 */
         header {
@@ -136,7 +72,7 @@
 
         /* 左侧边栏 */
         .sidebar {
-            width: 300px;
+            width: 340px; /* 稍微加宽以容纳操作按钮 */
             background-color: #252525;
             border-right: 1px solid var(--border);
             padding: 20px;
@@ -160,6 +96,100 @@
             padding-bottom: 20px;
         }
 
+        /* 存档列表样式 */
+        .saved-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .saved-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #333;
+            padding: 8px 10px;
+            border-radius: 4px;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .saved-item:hover {
+            background: #444;
+            border-left-color: var(--accent);
+        }
+
+        .saved-name {
+            font-size: 0.9rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+            cursor: pointer;
+            padding: 4px 0;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+        }
+
+        .btn-copy {
+            color: var(--info);
+        }
+        .btn-copy:hover {
+            background: rgba(52, 152, 219, 0.2);
+        }
+
+        .btn-delete {
+            color: #666;
+        }
+        .btn-delete:hover {
+            color: var(--danger);
+            background: rgba(231, 76, 60, 0.2);
+        }
+
+        .save-controls {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+
+        .btn-save {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        
+        .btn-save:hover {
+            background-color: #27ae60;
+        }
+
+        /* 队员行样式 */
         .player-row {
             display: flex;
             align-items: center;
@@ -212,27 +242,6 @@
             background-color: #e74c3c;
         }
 
-        .btn-save-pdf {
-            background-color: var(--accent);
-            color: #fff;
-            border: none;
-            padding: 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            width: 100%;
-            transition: background 0.2s;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-save-pdf:hover {
-            background-color: #e6ac42;
-        }
-
         /* 右侧：地图滚动区域 */
         .maps-container {
             flex: 1;
@@ -245,7 +254,6 @@
             background-color: #151515;
         }
 
-        /* 单个战术阶段板块 */
         .map-section {
             position: relative;
             width: 100%;
@@ -259,13 +267,36 @@
             flex-direction: column;
         }
 
+        /* 可编辑的阶段标题栏 */
         .map-header {
             background: rgba(0, 0, 0, 0.4);
-            padding: 10px 15px;
-            font-weight: bold;
             border-bottom: 1px solid var(--border);
             border-left: 4px solid var(--accent);
             color: #ddd;
+            display: flex;
+            align-items: center;
+        }
+
+        /* 阶段标题输入框 */
+        .phase-title-input {
+            background: transparent;
+            border: none;
+            color: inherit;
+            font-weight: bold;
+            font-size: 1rem;
+            width: 100%;
+            padding: 10px 15px;
+            font-family: inherit;
+            cursor: text;
+        }
+
+        .phase-title-input:focus {
+            outline: none;
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .phase-title-input:hover {
+            background: rgba(255,255,255,0.02);
         }
 
         .map-content-layout {
@@ -344,7 +375,6 @@
             }
         }
 
-        /* 队员 Token */
         .token {
             position: absolute;
             width: 30px; 
@@ -392,20 +422,25 @@
 <body>
 
     <header>
-        <input type="text" class="tactic-input" placeholder="输入战术名称" value="Dust2 Strategy">
+        <input type="text" id="main-tactic-title" class="tactic-input" placeholder="输入战术名称" value="Dust2 Strategy">
     </header>
 
     <div class="main-content">
         <!-- 左侧控制面板 -->
         <aside class="sidebar">
             
-            <!-- 保存按钮 -->
-            <div style="margin-bottom: 10px;">
-                <button class="btn-save-pdf" onclick="saveAsPdf()">
-                    <span>💾</span> 保存战术 (PDF)
-                </button>
-                <div style="font-size: 0.75rem; color: #888; text-align: center;">
-                    点击后在弹窗中选择 "另存为 PDF"
+            <!-- 战术库功能 -->
+            <div class="section-group">
+                <h3>战术记忆库</h3>
+                <div class="save-controls">
+                    <!-- 移除了左侧多余的输入框，直接使用顶部标题 -->
+                    <button class="btn-save" onclick="saveStrategy()">💾 保存当前战术</button>
+                </div>
+                <div style="font-size: 0.75rem; color: #888; margin-bottom: 10px;">
+                    * 战术名使用顶部标题
+                </div>
+                <div id="saved-list" class="saved-list">
+                    <!-- JS 生成列表项 -->
                 </div>
             </div>
 
@@ -447,11 +482,20 @@
 
         let players = JSON.parse(JSON.stringify(initialPlayers));
         let phaseCount = 1; 
+        
+        let phaseTitles = {
+            1: 'Phase 1: 初始站位 / Opening',
+            2: 'Phase 2: 战术执行 / Execute',
+            3: 'Phase 3: 残局 / Post-Plant'
+        };
+
+        const STORAGE_KEY = 'cs2_tactics_saves_v1';
 
         function init() {
             renderControls();
             setupListeners();
             renderMaps(phaseCount); 
+            loadSavedList(); 
         }
 
         function setupListeners() {
@@ -468,27 +512,28 @@
             });
         }
 
-        function getPhaseTitle(index) {
-            if (index === 1) return 'Phase 1: 初始站位 / Opening';
-            if (index === 2) return 'Phase 2: 战术执行 / Execute';
-            if (index === 3) return 'Phase 3: 残局 / Post-Plant';
-            return `Phase ${index}: 阶段 ${index}`;
+        function updatePhaseTitle(id, newVal) {
+            phaseTitles[id] = newVal;
         }
 
         function renderMaps(count) {
             const container = document.getElementById('maps-container');
-            const oldTokens = {}; 
-            document.querySelectorAll('.token').forEach(t => {
-                oldTokens[t.id] = { left: t.style.left, top: t.style.top };
-            });
-
+            const currentState = gatherState(); 
+            
             container.innerHTML = '';
 
             for (let i = 1; i <= count; i++) {
+                const currentTitle = phaseTitles[i] || `Phase ${i}: 阶段 ${i}`;
+                if (!phaseTitles[i]) phaseTitles[i] = currentTitle;
+
                 const section = document.createElement('div');
                 section.className = 'map-section';
                 section.innerHTML = `
-                    <div class="map-header">${getPhaseTitle(i)}</div>
+                    <div class="map-header">
+                        <input type="text" class="phase-title-input" 
+                               value="${currentTitle}" 
+                               oninput="updatePhaseTitle(${i}, this.value)">
+                    </div>
                     <div class="map-content-layout">
                         <div class="map-wrapper" id="map-phase-${i}">
                             <img src="" class="game-map map-image" alt="Tactical Map">
@@ -496,13 +541,13 @@
                         <div class="notes-panel">
                             <div class="notes-title">战术备注</div>
                             <label class="notes-label">阶段思路</label>
-                            <textarea class="notes-textarea" rows="2" placeholder="例如: 3-2 夹B，道具覆盖中路..."></textarea>
+                            <textarea id="note-summary-ph${i}" class="notes-textarea" rows="2" placeholder="例如: 3-2 夹B，道具覆盖中路..."></textarea>
                             
                             <div style="margin-top:10px; border-top:1px solid #333; padding-top:10px;">
                                 ${players.map((p, pIdx) => `
                                     <div style="display:flex; align-items:center; margin-bottom:5px; gap:5px;">
                                         <span class="note-name-p${pIdx}" style="color:${p.color}; font-weight:bold; font-size:0.8rem; width:40px;">${p.name.substring(0,4)}</span>
-                                        <input class="input-field" style="padding:4px; font-size:0.8rem;" placeholder="职责...">
+                                        <input id="note-duty-ph${i}-p${pIdx}" class="input-field" style="padding:4px; font-size:0.8rem;" placeholder="职责...">
                                     </div>
                                 `).join('')}
                             </div>
@@ -510,12 +555,24 @@
                     </div>
                 `;
                 container.appendChild(section);
-                renderTokensInContainer(i, oldTokens);
+                
+                const phaseData = currentState.phases && currentState.phases.find(p => p.id === i);
+                renderTokensInContainer(i, phaseData ? phaseData.tokens : null);
+
+                if (phaseData) {
+                    const summaryEl = document.getElementById(`note-summary-ph${i}`);
+                    if(summaryEl) summaryEl.value = phaseData.notes.summary || '';
+                    
+                    players.forEach((_, pIdx) => {
+                        const dutyEl = document.getElementById(`note-duty-ph${i}-p${pIdx}`);
+                        if(dutyEl) dutyEl.value = phaseData.notes.duties[pIdx] || '';
+                    });
+                }
             }
             updateMapImages(document.getElementById('map-url-input').value);
         }
 
-        function renderTokensInContainer(phaseIndex, savedPositions) {
+        function renderTokensInContainer(phaseIndex, savedTokens) {
             const containerId = `map-phase-${phaseIndex}`;
             const container = document.getElementById(containerId);
             players.forEach((player, pIdx) => {
@@ -524,9 +581,10 @@
                 token.id = `token-ph${phaseIndex}-p${pIdx}`; 
                 token.dataset.playerId = pIdx;
                 updateTokenVisuals(token, player);
-                if (savedPositions && savedPositions[token.id]) {
-                    token.style.left = savedPositions[token.id].left;
-                    token.style.top = savedPositions[token.id].top;
+                
+                if (savedTokens && savedTokens[pIdx]) {
+                    token.style.left = savedTokens[pIdx].left;
+                    token.style.top = savedTokens[pIdx].top;
                 } else {
                     token.style.left = `${50 + (pIdx * 5)}%`;
                     token.style.top = `${50 + (pIdx * 5)}%`;
@@ -652,9 +710,221 @@
             });
         }
 
-        // 核心 PDF 保存功能（通过打印）
-        function saveAsPdf() {
-            window.print();
+        // --- 核心存档逻辑 ---
+
+        function gatherState() {
+            const state = {
+                title: document.getElementById('main-tactic-title').value,
+                players: JSON.parse(JSON.stringify(players)),
+                phaseCount: phaseCount,
+                phaseTitles: JSON.parse(JSON.stringify(phaseTitles)),
+                phases: []
+            };
+
+            for (let i = 1; i <= phaseCount; i++) {
+                const phaseData = {
+                    id: i,
+                    tokens: {},
+                    notes: {
+                        summary: '',
+                        duties: {}
+                    }
+                };
+
+                players.forEach((p, pIdx) => {
+                    const token = document.getElementById(`token-ph${i}-p${pIdx}`);
+                    if (token) {
+                        phaseData.tokens[pIdx] = { left: token.style.left, top: token.style.top };
+                    }
+                });
+
+                const summaryEl = document.getElementById(`note-summary-ph${i}`);
+                if(summaryEl) phaseData.notes.summary = summaryEl.value;
+
+                players.forEach((_, pIdx) => {
+                    const dutyEl = document.getElementById(`note-duty-ph${i}-p${pIdx}`);
+                    if(dutyEl) phaseData.notes.duties[pIdx] = dutyEl.value;
+                });
+
+                state.phases.push(phaseData);
+            }
+            return state;
+        }
+
+        function saveStrategy() {
+            // 直接获取顶部标题作为文件名
+            const titleInput = document.getElementById('main-tactic-title');
+            const saveName = titleInput.value.trim();
+
+            if (!saveName) {
+                alert('请先在顶部输入战术名称！');
+                titleInput.focus();
+                return;
+            }
+
+            const currentState = gatherState();
+            const savedData = {
+                name: saveName,
+                timestamp: Date.now(),
+                data: currentState
+            };
+
+            let saves = [];
+            try {
+                saves = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            } catch (e) { saves = []; }
+
+            const existingIndex = saves.findIndex(s => s.name === saveName);
+            if (existingIndex >= 0) {
+                if(!confirm(`战术 "${saveName}" 已存在，是否覆盖？`)) return;
+                saves[existingIndex] = savedData;
+            } else {
+                saves.push(savedData);
+            }
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(saves));
+            loadSavedList(); 
+        }
+
+        // 复制功能
+        function duplicateStrategy(originalName, event) {
+            if(event) event.stopPropagation(); // 防止触发加载
+
+            let saves = [];
+            try {
+                saves = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            } catch (e) { return; }
+
+            const original = saves.find(s => s.name === originalName);
+            if(!original) return;
+
+            // 生成唯一的新名字
+            let newName = originalName + "_copy";
+            while (saves.some(s => s.name === newName)) {
+                newName += "_copy";
+            }
+
+            const newData = JSON.parse(JSON.stringify(original.data));
+            newData.title = newName; // 更新内部数据的标题
+
+            const newSave = {
+                name: newName,
+                timestamp: Date.now(),
+                data: newData
+            };
+
+            saves.push(newSave);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(saves));
+            loadSavedList();
+        }
+
+        function loadSavedList() {
+            const listContainer = document.getElementById('saved-list');
+            listContainer.innerHTML = '';
+
+            let saves = [];
+            try {
+                saves = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            } catch (e) { saves = []; }
+
+            if (saves.length === 0) {
+                listContainer.innerHTML = '<div style="color:#666; font-size:0.8rem; padding:10px; text-align:center;">暂无存档</div>';
+                return;
+            }
+
+            saves.sort((a, b) => b.timestamp - a.timestamp);
+
+            saves.forEach((save) => {
+                const item = document.createElement('div');
+                item.className = 'saved-item';
+                // 列表项结构优化，增加复制按钮
+                item.innerHTML = `
+                    <div class="saved-name" onclick="loadStrategy('${save.name}')">${save.name}</div>
+                    <div class="item-actions">
+                        <button class="btn-icon btn-copy" title="复制战术" onclick="duplicateStrategy('${save.name}', event)">❐</button>
+                        <button class="btn-icon btn-delete" title="删除" onclick="deleteStrategy('${save.name}', event)">✖</button>
+                    </div>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
+        function loadStrategy(name) {
+            let saves = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            const target = saves.find(s => s.name === name);
+            if (!target) return;
+
+            const data = target.data;
+
+            document.getElementById('main-tactic-title').value = data.title || '';
+            players = data.players;
+            phaseCount = data.phaseCount;
+            phaseTitles = data.phaseTitles || {};
+
+            document.getElementById('phase-count-input').value = phaseCount;
+            
+            renderControls();
+
+            const container = document.getElementById('maps-container');
+            container.innerHTML = ''; 
+
+            for (let i = 1; i <= phaseCount; i++) {
+                const currentTitle = phaseTitles[i] || `Phase ${i}`;
+                const section = document.createElement('div');
+                section.className = 'map-section';
+                section.innerHTML = `
+                    <div class="map-header">
+                        <input type="text" class="phase-title-input" 
+                               value="${currentTitle}" 
+                               oninput="updatePhaseTitle(${i}, this.value)">
+                    </div>
+                    <div class="map-content-layout">
+                        <div class="map-wrapper" id="map-phase-${i}">
+                            <img src="" class="game-map map-image" alt="Tactical Map">
+                        </div>
+                        <div class="notes-panel">
+                            <div class="notes-title">战术备注</div>
+                            <label class="notes-label">阶段思路</label>
+                            <textarea id="note-summary-ph${i}" class="notes-textarea" rows="2" placeholder="例如: 3-2 夹B，道具覆盖中路..."></textarea>
+                            
+                            <div style="margin-top:10px; border-top:1px solid #333; padding-top:10px;">
+                                ${players.map((p, pIdx) => `
+                                    <div style="display:flex; align-items:center; margin-bottom:5px; gap:5px;">
+                                        <span class="note-name-p${pIdx}" style="color:${p.color}; font-weight:bold; font-size:0.8rem; width:40px;">${p.name.substring(0,4)}</span>
+                                        <input id="note-duty-ph${i}-p${pIdx}" class="input-field" style="padding:4px; font-size:0.8rem;" placeholder="职责...">
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(section);
+
+                const phaseData = data.phases.find(p => p.id === i);
+                if (phaseData) {
+                    renderTokensInContainer(i, phaseData.tokens);
+                    
+                    const summaryEl = document.getElementById(`note-summary-ph${i}`);
+                    if(summaryEl) summaryEl.value = phaseData.notes.summary || '';
+
+                    players.forEach((_, pIdx) => {
+                        const dutyEl = document.getElementById(`note-duty-ph${i}-p${pIdx}`);
+                        if(dutyEl) dutyEl.value = phaseData.notes.duties[pIdx] || '';
+                    });
+                } else {
+                    renderTokensInContainer(i, null);
+                }
+            }
+            updateMapImages(document.getElementById('map-url-input').value);
+        }
+
+        function deleteStrategy(name, event) {
+            if(event) event.stopPropagation();
+            if(!confirm(`确定要删除 "${name}" 吗？`)) return;
+            let saves = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            saves = saves.filter(s => s.name !== name);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(saves));
+            loadSavedList();
         }
 
         init();
