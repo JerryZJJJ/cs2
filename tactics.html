@@ -165,7 +165,7 @@
         .map-section {
             position: relative;
             width: 100%;
-            max-width: 800px; /* 限制最大宽度，防止图片过大 */
+            max-width: 1400px; /* 限制最大宽度，防止图片过大 */
             border: 2px solid var(--border);
             border-radius: 8px;
             overflow: hidden;
@@ -194,7 +194,8 @@
         .map-wrapper {
             position: relative;
             flex: 1;
-            min-width: 360px;
+            min-width: 400px;
+            max-width: 1024px;
             /* 保持宽高比 */
             aspect-ratio: 1024 / 1024;
             background: #000;
@@ -405,20 +406,20 @@
                             <label class="notes-label" for="notes-phase-${i}-summary">简介</label>
                             <textarea id="notes-phase-${i}-summary" class="notes-textarea" rows="3" placeholder="这一阶段的总体思路..."></textarea>
 
-                            <label class="notes-label" for="notes-phase-${i}-awp">AWP 要求</label>
-                            <input id="notes-phase-${i}-awp" type="text" class="input-field" placeholder="AWP职责:">
+                            <label class="notes-label player-label-0" for="notes-phase-${i}-p0">${players[0]?.name || '角色1'} 要求</label>
+                            <input id="notes-phase-${i}-p0" type="text" class="input-field" placeholder="${players[0]?.name || '角色1'}职责:">
 
-                            <label class="notes-label" for="notes-phase-${i}-b">主B 要求</label>
-                            <input id="notes-phase-${i}-b" type="text" class="input-field" placeholder="主B职责:">
+                            <label class="notes-label player-label-1" for="notes-phase-${i}-p1">${players[1]?.name || '角色2'} 要求</label>
+                            <input id="notes-phase-${i}-p1" type="text" class="input-field" placeholder="${players[1]?.name || '角色2'}职责:">
 
-                            <label class="notes-label" for="notes-phase-${i}-s1">支持1 要求</label>
-                            <input id="notes-phase-${i}-s1" type="text" class="input-field" placeholder="支持1职责:">
+                            <label class="notes-label player-label-2" for="notes-phase-${i}-p2">${players[2]?.name || '角色3'} 要求</label>
+                            <input id="notes-phase-${i}-p2" type="text" class="input-field" placeholder="${players[2]?.name || '角色3'}职责:">
 
-                            <label class="notes-label" for="notes-phase-${i}-a">主A 要求</label>
-                            <input id="notes-phase-${i}-a" type="text" class="input-field" placeholder="主A职责:">
+                            <label class="notes-label player-label-3" for="notes-phase-${i}-p3">${players[3]?.name || '角色4'} 要求</label>
+                            <input id="notes-phase-${i}-p3" type="text" class="input-field" placeholder="${players[3]?.name || '角色4'}职责:">
 
-                            <label class="notes-label" for="notes-phase-${i}-s2">支持2 要求</label>
-                            <input id="notes-phase-${i}-s2" type="text" class="input-field" placeholder="支持2职责:">
+                            <label class="notes-label player-label-4" for="notes-phase-${i}-p4">${players[4]?.name || '角色5'} 要求</label>
+                            <input id="notes-phase-${i}-p4" type="text" class="input-field" placeholder="${players[4]?.name || '角色5'}职责:">
                         </div>
                     </div>
                 `;
@@ -508,6 +509,14 @@
             players[index].name = newName;
             document.querySelectorAll(`.token-id-${index}`).forEach(token => {
                 applyTokenLabel(token, newName);
+            });
+            // 更新所有备注标签
+            document.querySelectorAll(`.player-label-${index}`).forEach(label => {
+                label.textContent = `${newName} 要求`;
+            });
+            // 更新所有备注输入框的 placeholder
+            document.querySelectorAll(`input[id^="notes-phase-"][id$="-p${index}"]`).forEach(input => {
+                input.placeholder = `${newName}职责:`;
             });
         }
 
