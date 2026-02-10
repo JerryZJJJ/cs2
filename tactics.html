@@ -429,7 +429,7 @@
                                 ${players.map((p, pIdx) => `
                                     <div style="display:flex; align-items:center; margin-bottom:5px; gap:5px;">
                                         <!-- 给名字加上class，方便后续查找更新 -->
-                                        <span class="note-name-p${pIdx}" style="color:${p.color}; font-weight:bold; font-size:0.8rem; width:40px;">${p.name.substring(0,3)}</span>
+                                        <span class="note-name-p${pIdx}" style="color:${p.color}; font-weight:bold; font-size:0.8rem; width:40px;">${p.name.substring(0,4)}</span>
                                         <input class="input-field" style="padding:4px; font-size:0.8rem;" placeholder="职责...">
                                     </div>
                                 `).join('')}
@@ -509,7 +509,7 @@
 
         function updatePlayerName(index, newName) {
             players[index].name = newName;
-            const displayStr = newName.substring(0, 3).toUpperCase();
+            const displayStr = newName.substring(0, 4).toUpperCase(); // 改为 4 个字符
 
             // 1. 更新地图上的 Token 文字
             document.querySelectorAll(`.token-id-${index}`).forEach(token => {
@@ -539,17 +539,19 @@
 
         function updateTokenVisuals(element, playerData) {
             element.style.backgroundColor = playerData.color;
-            const displayStr = playerData.name.substring(0, 3).toUpperCase();
+            const displayStr = playerData.name.substring(0, 4).toUpperCase(); // 改为 4 个字符
             element.innerText = displayStr;
             adjustTokenFontSize(element, displayStr); // 初始化时检测字号
         }
 
         // 新增：自适应字号逻辑
         function adjustTokenFontSize(element, text) {
-            if (text.length > 2) {
-                element.style.fontSize = '9px'; // 字符多时，缩小字号
+            if (text.length > 3) {
+                element.style.fontSize = '8px'; // 4个字符时，变得更小
+            } else if (text.length > 2) {
+                element.style.fontSize = '10px'; // 3个字符
             } else {
-                element.style.fontSize = '11px'; // 默认字号
+                element.style.fontSize = '12px'; // 默认字号
             }
         }
 
