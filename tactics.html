@@ -16,7 +16,7 @@
 
         * {
             box-sizing: border-box;
-            user-select: none; /* 防止拖拽时选中文字 */
+            /* user-select: none;  Removed global restriction to allow text selection in inputs */
         }
 
         body {
@@ -28,8 +28,74 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* 防止整个页面滚动，只让地图区域滚动 */
+            overflow: hidden; 
         }
+
+        /* --- 打印专用样式 (核心修改) --- */
+        @media print {
+            @page {
+                size: landscape; /* 建议横向打印，效果更好 */
+                margin: 10mm;
+            }
+
+            body {
+                height: auto;
+                overflow: visible;
+                background-color: #1b1b1b !important; /* 强制深色背景，需在打印设置开启'背景图形' */
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .main-content {
+                display: block !important;
+                overflow: visible !important;
+            }
+
+            /* 隐藏左侧栏和多余元素 */
+            .sidebar, .btn-save-pdf, .hidden-setting {
+                display: none !important;
+            }
+
+            /* 优化标题显示 */
+            header {
+                border: none;
+                padding: 10px;
+                background: none;
+            }
+            
+            .tactic-input {
+                border: none !important;
+                font-size: 24pt !important;
+                color: #000; /* PDF标题用深色或根据背景调整 */
+                text-align: center;
+                width: 100%;
+            }
+
+            /* 优化地图容器 */
+            .maps-container {
+                padding: 0 !important;
+                overflow: visible !important;
+                background: none !important;
+                display: block !important;
+                gap: 20px;
+            }
+
+            .map-section {
+                border: 1px solid #ccc !important;
+                box-shadow: none !important;
+                margin-bottom: 20px;
+                break-inside: avoid; /* 防止分页截断 */
+                page-break-inside: avoid;
+                background-color: #222 !important;
+            }
+
+            /* 强制文字颜色，防止打印机自动变黑白 */
+            .token {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+        /* --- 打印样式结束 --- */
 
         /* 顶部标题栏 */
         header {
@@ -65,16 +131,16 @@
         .main-content {
             display: flex;
             flex: 1;
-            overflow: hidden; /* 关键：限制溢出 */
+            overflow: hidden; 
         }
 
-        /* 左侧边栏：设置与队员 */
+        /* 左侧边栏 */
         .sidebar {
             width: 300px;
             background-color: #252525;
             border-right: 1px solid var(--border);
             padding: 20px;
-            overflow-y: auto; /* 允许侧边栏独立滚动 */
+            overflow-y: auto; 
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
@@ -139,21 +205,43 @@
             font-weight: bold;
             width: 100%;
             transition: background 0.2s;
+            margin-top: 10px;
         }
 
         .btn-reset:hover {
             background-color: #e74c3c;
         }
 
+        .btn-save-pdf {
+            background-color: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: background 0.2s;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-save-pdf:hover {
+            background-color: #e6ac42;
+        }
+
         /* 右侧：地图滚动区域 */
         .maps-container {
             flex: 1;
-            overflow-y: auto; /* 允许垂直滚动 */
-            padding: 40px; /* 增加整体留白 */
+            overflow-y: auto; 
+            padding: 40px; 
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 40px; /* 板块间距 */
+            gap: 40px; 
             background-color: #151515;
         }
 
@@ -161,8 +249,8 @@
         .map-section {
             position: relative;
             width: 100%;
-            max-width: 1000px; /* 限制整个卡片的最大宽度 */
-            flex-shrink: 0; /* 关键：防止被压缩！ */
+            max-width: 1000px;
+            flex-shrink: 0; 
             border: 1px solid var(--border);
             border-radius: 8px;
             background-color: #222;
@@ -180,7 +268,6 @@
             color: #ddd;
         }
 
-        /* 地图+备注的布局容器 */
         .map-content-layout {
             display: flex;
             flex-direction: row;
@@ -190,25 +277,23 @@
             justify-content: center;
         }
 
-        /* 包裹地图图片的容器 */
         .map-wrapper {
             position: relative;
             width: 100%; 
-            max-width: 600px; /* 这里控制地图显示的尺寸，600px 比较适中 */
+            max-width: 600px;
             background: #000;
             border-radius: 4px;
-            overflow: hidden; /* 防止图片圆角溢出 */
+            overflow: hidden;
             box-shadow: 0 0 10px rgba(0,0,0,0.3);
         }
 
         .game-map {
             width: 100%;
-            height: auto; /* 关键：自动高度，保持比例 */
-            display: block; /* 消除图片底部空隙 */
+            height: auto; 
+            display: block; 
             pointer-events: none;
         }
 
-        /* 备注面板 */
         .notes-panel {
             flex: 1;
             min-width: 250px;
@@ -248,7 +333,6 @@
             font-family: inherit;
         }
 
-        /* 响应式：屏幕变窄时，备注折行到地图下方 */
         @media (max-width: 950px) {
             .map-content-layout {
                 flex-direction: column;
@@ -256,14 +340,14 @@
             }
             .notes-panel {
                 width: 100%;
-                max-width: 600px; /* 对齐地图宽度 */
+                max-width: 600px; 
             }
         }
 
         /* 队员 Token */
         .token {
             position: absolute;
-            width: 30px; /* 稍微调小一点，显得地图大 */
+            width: 30px; 
             height: 30px;
             border-radius: 50%;
             background-color: #fff;
@@ -273,17 +357,16 @@
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            font-size: 11px; /* 默认字号 */
+            font-size: 11px;
             color: #fff;
             text-shadow: 0 1px 2px rgba(0,0,0,1);
             cursor: grab;
             z-index: 100;
-            transform: translate(-50%, -50%); /* 居中定位 */
+            transform: translate(-50%, -50%); 
             transition: transform 0.1s;
-            
-            /* 关键修改：防止换行 */
             white-space: nowrap; 
             overflow: hidden;
+            user-select: none;
         }
 
         .token:active {
@@ -292,7 +375,6 @@
             z-index: 200;
         }
 
-        /* T / CT 标记 (可选) */
         .token::after {
             content: '';
             position: absolute;
@@ -301,7 +383,6 @@
             border: 1px solid rgba(255,255,255,0.4);
         }
 
-        /* 辅助类：隐藏元素 */
         .hidden-setting {
             display: none;
         }
@@ -311,25 +392,28 @@
 <body>
 
     <header>
-        <input type="text" class="tactic-input" placeholder="输入战术名称 (例: Dust2 Mid Split)" value="Dust2 Strategy">
+        <input type="text" class="tactic-input" placeholder="输入战术名称" value="Dust2 Strategy">
     </header>
 
     <div class="main-content">
         <!-- 左侧控制面板 -->
         <aside class="sidebar">
             
+            <!-- 保存按钮 -->
+            <div style="margin-bottom: 10px;">
+                <button class="btn-save-pdf" onclick="saveAsPdf()">
+                    <span>💾</span> 保存战术 (PDF)
+                </button>
+                <div style="font-size: 0.75rem; color: #888; text-align: center;">
+                    点击后在弹窗中选择 "另存为 PDF"
+                </div>
+            </div>
+
             <div class="section-group">
                 <h3>全局设置</h3>
-                
-                <!-- 地图 URL 输入区域：已隐藏 -->
                 <div class="hidden-setting">
-                    <div style="font-size: 0.8rem; color: #aaa; margin-bottom: 5px;">地图 URL:</div>
                     <input type="text" id="map-url-input" class="input-field" value="https://github.com/JerryZJJJ/cs2/raw/main/dust2_game_radar_1b998342f2.webp">
-                    <div style="margin-top:5px; font-size: 0.75rem; color: #666;">
-                        * 自动适配任何比例的地图图片
-                    </div>
                 </div>
-
                 <div style="font-size: 0.8rem; color: #aaa; margin: 5px 0 5px;">阶段数量:</div>
                 <input type="number" id="phase-count-input" class="input-field" min="1" max="10" value="1">
             </div>
@@ -353,7 +437,6 @@
     </div>
 
     <script>
-        // 配置：恢复之前的默认中文名
         const initialPlayers = [
             { id: 0, name: 'AWP', color: '#e74c3c' },    
             { id: 1, name: '主B', color: '#f1c40f' },  
@@ -363,22 +446,19 @@
         ];
 
         let players = JSON.parse(JSON.stringify(initialPlayers));
-        let phaseCount = 1; // 修改默认阶段数为 1
+        let phaseCount = 1; 
 
-        // 初始化
         function init() {
             renderControls();
             setupListeners();
-            renderMaps(phaseCount); // 初始渲染
+            renderMaps(phaseCount); 
         }
 
         function setupListeners() {
-            // 地图URL监听 (虽然UI隐藏了，但逻辑保留)
             document.getElementById('map-url-input').addEventListener('input', (e) => {
                 updateMapImages(e.target.value);
             });
 
-            // 阶段数量监听
             document.getElementById('phase-count-input').addEventListener('input', (e) => {
                 const val = parseInt(e.target.value, 10);
                 if (val && val > 0 && val !== phaseCount) {
@@ -395,11 +475,8 @@
             return `Phase ${index}: 阶段 ${index}`;
         }
 
-        // 重新渲染所有地图板块
         function renderMaps(count) {
             const container = document.getElementById('maps-container');
-            
-            // 暂存旧数据逻辑
             const oldTokens = {}; 
             document.querySelectorAll('.token').forEach(t => {
                 oldTokens[t.id] = { left: t.style.left, top: t.style.top };
@@ -410,16 +487,12 @@
             for (let i = 1; i <= count; i++) {
                 const section = document.createElement('div');
                 section.className = 'map-section';
-                
-                // HTML 结构
                 section.innerHTML = `
                     <div class="map-header">${getPhaseTitle(i)}</div>
                     <div class="map-content-layout">
                         <div class="map-wrapper" id="map-phase-${i}">
                             <img src="" class="game-map map-image" alt="Tactical Map">
-                            <!-- Tokens inserted here -->
                         </div>
-                        
                         <div class="notes-panel">
                             <div class="notes-title">战术备注</div>
                             <label class="notes-label">阶段思路</label>
@@ -428,7 +501,6 @@
                             <div style="margin-top:10px; border-top:1px solid #333; padding-top:10px;">
                                 ${players.map((p, pIdx) => `
                                     <div style="display:flex; align-items:center; margin-bottom:5px; gap:5px;">
-                                        <!-- 给名字加上class，方便后续查找更新 -->
                                         <span class="note-name-p${pIdx}" style="color:${p.color}; font-weight:bold; font-size:0.8rem; width:40px;">${p.name.substring(0,4)}</span>
                                         <input class="input-field" style="padding:4px; font-size:0.8rem;" placeholder="职责...">
                                     </div>
@@ -438,37 +510,27 @@
                     </div>
                 `;
                 container.appendChild(section);
-                
-                // 插入 Token
                 renderTokensInContainer(i, oldTokens);
             }
-
-            // 重新应用图片链接
             updateMapImages(document.getElementById('map-url-input').value);
         }
 
         function renderTokensInContainer(phaseIndex, savedPositions) {
             const containerId = `map-phase-${phaseIndex}`;
             const container = document.getElementById(containerId);
-            
             players.forEach((player, pIdx) => {
                 const token = document.createElement('div');
                 token.className = `token token-id-${pIdx}`;
-                token.id = `token-ph${phaseIndex}-p${pIdx}`; // 唯一ID
+                token.id = `token-ph${phaseIndex}-p${pIdx}`; 
                 token.dataset.playerId = pIdx;
-
                 updateTokenVisuals(token, player);
-
-                // 恢复位置 或 设置默认位置
                 if (savedPositions && savedPositions[token.id]) {
                     token.style.left = savedPositions[token.id].left;
                     token.style.top = savedPositions[token.id].top;
                 } else {
-                    // 默认散开一点
                     token.style.left = `${50 + (pIdx * 5)}%`;
                     token.style.top = `${50 + (pIdx * 5)}%`;
                 }
-
                 enableDrag(token, container);
                 container.appendChild(token);
             });
@@ -481,7 +543,6 @@
             });
         }
 
-        // --- 左侧控制逻辑 ---
         function renderControls() {
             const container = document.getElementById('player-controls');
             container.innerHTML = '';
@@ -509,15 +570,11 @@
 
         function updatePlayerName(index, newName) {
             players[index].name = newName;
-            const displayStr = newName.substring(0, 4).toUpperCase(); // 改为 4 个字符
-
-            // 1. 更新地图上的 Token 文字
+            const displayStr = newName.substring(0, 4).toUpperCase();
             document.querySelectorAll(`.token-id-${index}`).forEach(token => {
                 token.innerText = displayStr;
-                adjustTokenFontSize(token, displayStr); // 更新文字时也检测字号
+                adjustTokenFontSize(token, displayStr); 
             });
-            
-            // 2. 实时更新备注栏里的名字
             document.querySelectorAll(`.note-name-p${index}`).forEach(span => {
                 span.innerText = displayStr;
             });
@@ -525,13 +582,9 @@
 
         function updatePlayerColor(index, newColor) {
             players[index].color = newColor;
-
-            // 1. 更新地图上的 Token 颜色
             document.querySelectorAll(`.token-id-${index}`).forEach(token => {
                 token.style.backgroundColor = newColor;
             });
-
-            // 2. 实时更新备注栏里的名字颜色
             document.querySelectorAll(`.note-name-p${index}`).forEach(span => {
                 span.style.color = newColor;
             });
@@ -539,32 +592,28 @@
 
         function updateTokenVisuals(element, playerData) {
             element.style.backgroundColor = playerData.color;
-            const displayStr = playerData.name.substring(0, 4).toUpperCase(); // 改为 4 个字符
+            const displayStr = playerData.name.substring(0, 4).toUpperCase();
             element.innerText = displayStr;
-            adjustTokenFontSize(element, displayStr); // 初始化时检测字号
+            adjustTokenFontSize(element, displayStr);
         }
 
-        // 新增：自适应字号逻辑
         function adjustTokenFontSize(element, text) {
             if (text.length > 3) {
-                element.style.fontSize = '8px'; // 4个字符时，变得更小
+                element.style.fontSize = '8px';
             } else if (text.length > 2) {
-                element.style.fontSize = '10px'; // 3个字符
+                element.style.fontSize = '10px'; 
             } else {
-                element.style.fontSize = '12px'; // 默认字号
+                element.style.fontSize = '12px'; 
             }
         }
 
-        // --- 拖拽核心 ---
         function enableDrag(element, container) {
             let isDragging = false;
-            
             const startDrag = (e) => {
                 isDragging = true;
                 element.style.zIndex = 1000;
                 element.style.cursor = 'grabbing';
             };
-
             const endDrag = () => {
                 if(isDragging) {
                     isDragging = false;
@@ -572,37 +621,24 @@
                     element.style.cursor = 'grab';
                 }
             };
-
             const doDrag = (e) => {
                 if (!isDragging) return;
                 e.preventDefault();
-
-                // 兼容触摸和鼠标
                 const clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
                 const clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
-
                 const rect = container.getBoundingClientRect();
-
-                // 计算相对于容器的坐标
                 let x = clientX - rect.left;
                 let y = clientY - rect.top;
-
-                // 边界限制
                 x = Math.max(0, Math.min(x, rect.width));
                 y = Math.max(0, Math.min(y, rect.height));
-
-                // 转换为百分比
                 const xPercent = (x / rect.width) * 100;
                 const yPercent = (y / rect.height) * 100;
-
                 element.style.left = `${xPercent}%`;
                 element.style.top = `${yPercent}%`;
             };
-
             element.addEventListener('mousedown', startDrag);
             window.addEventListener('mouseup', endDrag);
             window.addEventListener('mousemove', doDrag);
-
             element.addEventListener('touchstart', startDrag, {passive: false});
             window.addEventListener('touchend', endDrag);
             window.addEventListener('touchmove', doDrag, {passive: false});
@@ -616,7 +652,11 @@
             });
         }
 
-        // 启动
+        // 核心 PDF 保存功能（通过打印）
+        function saveAsPdf() {
+            window.print();
+        }
+
         init();
 
     </script>
