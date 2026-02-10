@@ -193,10 +193,6 @@
         /* 包裹地图图片的容器 */
         .map-wrapper {
             position: relative;
-            /* 关键修改：
-               1. 移除 aspect-ratio，改为由图片撑开高度 
-               2. 设置合理的 max-width，不再巨大
-            */
             width: 100%; 
             max-width: 600px; /* 这里控制地图显示的尺寸，600px 比较适中 */
             background: #000;
@@ -277,13 +273,17 @@
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            font-size: 11px;
+            font-size: 11px; /* 默认字号 */
             color: #fff;
             text-shadow: 0 1px 2px rgba(0,0,0,1);
             cursor: grab;
             z-index: 100;
             transform: translate(-50%, -50%); /* 居中定位 */
             transition: transform 0.1s;
+            
+            /* 关键修改：防止换行 */
+            white-space: nowrap; 
+            overflow: hidden;
         }
 
         .token:active {
@@ -301,6 +301,11 @@
             border: 1px solid rgba(255,255,255,0.4);
         }
 
+        /* 辅助类：隐藏元素 */
+        .hidden-setting {
+            display: none;
+        }
+
     </style>
 </head>
 <body>
@@ -315,14 +320,18 @@
             
             <div class="section-group">
                 <h3>全局设置</h3>
-                <div style="font-size: 0.8rem; color: #aaa; margin-bottom: 5px;">地图 URL:</div>
-                <input type="text" id="map-url-input" class="input-field" value="https://github.com/JerryZJJJ/cs2/raw/main/dust2_game_radar_1b998342f2.webp">
-                <div style="margin-top:5px; font-size: 0.75rem; color: #666;">
-                    * 自动适配任何比例的地图图片
+                
+                <!-- 地图 URL 输入区域：已隐藏 -->
+                <div class="hidden-setting">
+                    <div style="font-size: 0.8rem; color: #aaa; margin-bottom: 5px;">地图 URL:</div>
+                    <input type="text" id="map-url-input" class="input-field" value="https://github.com/JerryZJJJ/cs2/raw/main/dust2_game_radar_1b998342f2.webp">
+                    <div style="margin-top:5px; font-size: 0.75rem; color: #666;">
+                        * 自动适配任何比例的地图图片
+                    </div>
                 </div>
 
-                <div style="font-size: 0.8rem; color: #aaa; margin: 15px 0 5px;">阶段数量:</div>
-                <input type="number" id="phase-count-input" class="input-field" min="1" max="10" value="2">
+                <div style="font-size: 0.8rem; color: #aaa; margin: 5px 0 5px;">阶段数量:</div>
+                <input type="number" id="phase-count-input" class="input-field" min="1" max="10" value="1">
             </div>
 
             <div class="section-group">
@@ -354,7 +363,7 @@
         ];
 
         let players = JSON.parse(JSON.stringify(initialPlayers));
-        let phaseCount = 1; // 默认1阶段
+        let phaseCount = 1; // 修改默认阶段数为 1
 
         // 初始化
         function init() {
@@ -364,7 +373,7 @@
         }
 
         function setupListeners() {
-            // 地图URL监听
+            // 地图URL监听 (虽然UI隐藏了，但逻辑保留)
             document.getElementById('map-url-input').addEventListener('input', (e) => {
                 updateMapImages(e.target.value);
             });
@@ -390,7 +399,7 @@
         function renderMaps(count) {
             const container = document.getElementById('maps-container');
             
-            // 暂存旧数据逻辑（可选优化，防止改变阶段数时位置丢失）
+            // 暂存旧数据逻辑
             const oldTokens = {}; 
             document.querySelectorAll('.token').forEach(t => {
                 oldTokens[t.id] = { left: t.style.left, top: t.style.top };
@@ -505,6 +514,7 @@
             // 1. 更新地图上的 Token 文字
             document.querySelectorAll(`.token-id-${index}`).forEach(token => {
                 token.innerText = displayStr;
+                adjustTokenFontSize(token, displayStr); // 更新文字时也检测字号
             });
             
             // 2. 实时更新备注栏里的名字
@@ -529,7 +539,18 @@
 
         function updateTokenVisuals(element, playerData) {
             element.style.backgroundColor = playerData.color;
-            element.innerText = playerData.name.substring(0, 3).toUpperCase();
+            const displayStr = playerData.name.substring(0, 3).toUpperCase();
+            element.innerText = displayStr;
+            adjustTokenFontSize(element, displayStr); // 初始化时检测字号
+        }
+
+        // 新增：自适应字号逻辑
+        function adjustTokenFontSize(element, text) {
+            if (text.length > 2) {
+                element.style.fontSize = '9px'; // 字符多时，缩小字号
+            } else {
+                element.style.fontSize = '11px'; // 默认字号
+            }
         }
 
         // --- 拖拽核心 ---
